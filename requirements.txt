@@ -2,3 +2,4 @@ Flask
 bcrypt
 pyotp
 flask-jwt-extended
+gunicorn

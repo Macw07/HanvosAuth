@@ -16,7 +16,7 @@ ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 
 # 允许从外部访问
-EXPOSE 3099
+EXPOSE 5008
 
 # 使用 Gunicorn 运行 Flask
-CMD ["gunicorn", "--bind", "0.0.0.0:3099", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5008", "app:app"]

@@ -86,7 +86,9 @@ def token_verify():
     if not token:
         return jsonify({'code': 400, 'msg': 'Token is missing!'})
     decoded_token = verify_jwt(token)
+    print("Verified")
     if decoded_token:
+        print("Res")
         return jsonify({'code': 200, 'msg': 'Success', 'token_data': decoded_token})
     print(decoded_token)
     return jsonify({'code': 401, 'msg': 'Invalid token!'})

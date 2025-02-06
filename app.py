@@ -27,6 +27,7 @@ def verify_jwt(token):
     try:
         print("Trying to verify token")
         decoded_token = decode_token(token)
+        print(decoded_token)
         return decoded_token
     except JWTDecodeError as e:
         print(f"JWT decoding error: {e}")  # ✅ 直接打印错误信息

@@ -43,7 +43,7 @@ def login():
     if request.method == 'POST':
         if 'user_id' in session:
             access_token = create_access_token(
-                identity=session['user_id'],  # 这里必须是字符串或整数
+                identity=str(session['user_id']),  # 这里必须是字符串或整数
                 expires_delta=timedelta(seconds=60),
                 additional_claims={'username': session['username'], 'email': session['email']}
             )
@@ -67,7 +67,7 @@ def login():
                     session['username'] = user['username']
                     session['email'] = user['email']
                     access_token = create_access_token(
-                        identity=session['user_id'],  # 这里必须是字符串或整数
+                        identity=str(session['user_id']),  # 这里必须是字符串或整数
                         expires_delta=timedelta(seconds=60),
                         additional_claims={'username': session['username'], 'email': session['email']}
                     )

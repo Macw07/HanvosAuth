@@ -38,8 +38,10 @@ def login():
     if request.method == 'POST':
         if 'user_id' in session:
             access_token = create_access_token(
-                identity={'id': session['user_id'], 'username': session['username'], 'email': session['email']},
-                expires_delta=timedelta(seconds=60))
+                identity=session['user_id'],  # 这里必须是字符串或整数
+                expires_delta=timedelta(seconds=60),
+                additional_claims={'username': session['username'], 'email': session['email']}
+            )
             response = {'code': 200, 'msg': 'Success', 'token': access_token, 'redirect': redirect_url + f'?token={access_token}'}
             return jsonify(response)
 
@@ -59,7 +61,11 @@ def login():
                     session['user_id'] = user['id']
                     session['username'] = user['username']
                     session['email'] = user['email']
-                    access_token = create_access_token(identity={'id': user['id'], 'username': user['username'], 'email': user['email']}, expires_delta=timedelta(seconds=60))
+                    access_token = create_access_token(
+                        identity=session['user_id'],  # 这里必须是字符串或整数
+                        expires_delta=timedelta(seconds=60),
+                        additional_claims={'username': session['username'], 'email': session['email']}
+                    )
                     response = {'code': 200, 'msg': 'Success', 'token': access_token, 'redirect': redirect_url}
                     return jsonify(response)
                 return jsonify({'code': 401, 'msg': 'Account is blocked!'})
@@ -76,10 +82,14 @@ def login():
 @app.route('/token/verify', methods=['GET'])
 def token_verify():
     token = request.args.get('token')
-    if verify_jwt(token):
-        decoded = decode_token(token).get('sub')
-        return jsonify({'code': 200, 'msg': 'Success', 'identity': decoded})
-    return jsonify({'code': 401, 'msg': 'Incorrect token!'})
+    if not token:
+        return jsonify({'code': 400, 'msg': 'Token is missing!'})
+
+    decoded_token = verify_jwt(token)
+    if decoded_token:
+        return jsonify({'code': 200, 'msg': 'Success', 'token_data': decoded_token})
+
+    return jsonify({'code': 401, 'msg': 'Invalid token!'})
 
 
 @app.route('/user/get')

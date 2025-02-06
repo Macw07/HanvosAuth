@@ -3,3 +3,4 @@ bcrypt
 pyotp
 flask-jwt-extended
 gunicorn
+flask_mail

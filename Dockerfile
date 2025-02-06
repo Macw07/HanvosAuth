@@ -19,4 +19,4 @@ ENV FLASK_ENV=production
 EXPOSE 5139
 
 # 使用 Gunicorn 运行 Flask
-CMD ["gunicorn", "--bind", "0.0.0.0:5139", "app:app", "--log-level=debug", "--access-logfile=-", "--error-logfile=-"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5139", "app:app"]

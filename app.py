@@ -24,15 +24,10 @@ def check_password(hashed_password, password):
 
 def verify_jwt(token):
     try:
-        print("Trying to verify token", token)
         decoded_token = decode_token(token)
-        print(f"Decoded Token: {decoded_token}")  # ✅ 确保成功解析时也打印
         return decoded_token
     except JWTDecodeError as e:
-        print(f"JWT decoding error: {e}")  # ✅ 仅捕获 JWT 解析错误
-    except Exception as e:
-        print(f"Unexpected error: {e}")  # ✅ 捕获所有未预料的错误
-    return None
+        return None
 
 
 
@@ -89,13 +84,9 @@ def token_verify():
     token = request.args.get('token')
     if not token:
         return jsonify({'code': 400, 'msg': 'Token is missing!'})
-    print("Verify Token")
     decoded_token = verify_jwt(token)
-    print("Verified")
     if decoded_token:
-        print("Res")
         return jsonify({'code': 200, 'msg': 'Success', 'token_data': decoded_token})
-    print(decoded_token)
     return jsonify({'code': 401, 'msg': 'Invalid token!'})
 
 

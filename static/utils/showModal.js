@@ -24,8 +24,9 @@ export function showModal(message, callback) {
     // 阻止背景滚动
     document.body.style.overflow = 'hidden';
 
-    // 确认按钮点击事件
-    document.getElementById('confirmButton').addEventListener('click', () => {
+    const confirmButton = document.getElementById('confirmButton');
+
+    function closeModal() {
         modal.remove();
         document.body.style.overflow = ''; // 恢复滚动
 
@@ -33,5 +34,20 @@ export function showModal(message, callback) {
         if (typeof callback === 'function') {
             callback();
         }
-    });
+
+        // 移除键盘事件监听
+        document.removeEventListener('keydown', handleKeyDown);
+    }
+
+    function handleKeyDown(event) {
+        if (event.key === 'Enter' && !document.activeElement.matches('input, textarea, select')) {
+            closeModal();
+        }
+    }
+
+    // 监听点击 "Confirm" 按钮
+    confirmButton.addEventListener('click', closeModal);
+
+    // 监听键盘回车键
+    document.addEventListener('keydown', handleKeyDown);
 }

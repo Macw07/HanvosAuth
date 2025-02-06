@@ -1,19 +1,31 @@
+import time
 from datetime import timedelta
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import bcrypt
 import pyotp
 import random
+import os
 from database_operations import db_execute, db_query
 from flask_jwt_extended import JWTManager, create_access_token, decode_token, get_jwt_identity
 from flask_jwt_extended.exceptions import JWTDecodeError
+from utils.email_init import flask_mail_init, send_email
 
 
 app = Flask(__name__)
 app.secret_key = "RTYUJNBGFR%^&*"
 app.config["JWT_SECRET_KEY"] = "FGHJUI^TRFgbn3223&^%R"  # JWT 秘钥
+app.config["ENV"] = os.getenv("FLASK_ENV", "development")
 jwt = JWTManager(app)
 totp = pyotp.TOTP('MRHWLR7C4FNJISRWFHQBFP67VOCHDALM')
+flask_mail_init()
+
+
+if app.config["ENV"] == "production":
+    app.static_folder = "static_prod"
+else:
+    app.static_folder = "static"
+
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -29,6 +41,11 @@ def verify_jwt(token):
     except JWTDecodeError as e:
         return None
 
+
+@app.route('/email/test')
+def test():
+    send_email('otp_code.html', "Your OTP Code for All-Hanvos", 'marco.shengqi@gmail.com', code="309937")
+    return jsonify("Success")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -112,7 +129,10 @@ def register():
         user_code = data['user_code']
         user = db_query("SELECT * FROM users WHERE email = ?", (email, ))
         if user:
-            return jsonify({'code': 201, 'msg': 'User(email) already exists!'})
+            return jsonify({'code': 201, 'msg': 'Email already exists!'})
+        user = db_query("SELECT * FROM users WHERE username = ?", (username,))
+        if user:
+            return jsonify({'code': 201, 'msg': 'Username already exists!'})
         if code != user_code:
             return jsonify({'code': 201, 'msg': 'Incorrect OTP code!'})
         db_execute("INSERT INTO Users(username, email, password, is_active, otp) VALUES(?, ?, ?, ?, ?)", (
@@ -122,11 +142,25 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/password/reset', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        email = request.get_json()['email']
+        user = db_query("SELECT * FROM users WHERE email = ?", (email,))
+        if user:
+            password = "".join(random.choices("0123456789", k=8))
+            db_execute("UPDATE users SET password = ? WHERE email = ?", (hash_password(password), email))
+            send_email('forget_password.html', 'Your New All-Hanvos Password', email, password=password)
+        return jsonify({'code': 200, 'msg': 'Password reset successfully!'})
+    return render_template('forget_password.html')
+
+
 @app.route('/get_verification_code', methods=['POST'])
 def get_verification_code():
     data = request.get_json()
     email = data.get('email').lower()
     code = "".join(random.choices("0123456789", k=6))
+    send_email('otp_code.html', "Your OTP Code for All-Hanvos", email, code=code)
     session['otp'] = code + '$' + email
     return jsonify({'code': 200, 'msg': 'Success'})
 
@@ -155,6 +189,9 @@ def update_profile():
     avatar = data.get('avatar')
     username = data.get('username')
     password = data.get('password')
+    res = db_query('SELECT * FROM Users WHERE username = ?', (username, ))
+    if res and res[0]['id'] != session['user_id']:
+        return jsonify({'code': 201, 'msg': 'Username is already occupied!'})
     if password == 'no change':
         db_execute("Update Users SET username=?, avatar=? WHERE email=?", (username, avatar, session['email'], ))
     else:
@@ -167,6 +204,7 @@ def update_profile():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5139)

@@ -27,7 +27,8 @@ def verify_jwt(token):
     try:
         decoded_token = decode_token(token)
         return decoded_token
-    except JWTDecodeError:
+    except JWTDecodeError as e:
+        print(f"JWT decoding error: {e}")  # ✅ 直接打印错误信息
         return None
 
 
@@ -84,7 +85,6 @@ def token_verify():
     token = request.args.get('token')
     if not token:
         return jsonify({'code': 400, 'msg': 'Token is missing!'})
-    print(token)
     decoded_token = verify_jwt(token)
     if decoded_token:
         return jsonify({'code': 200, 'msg': 'Success', 'token_data': decoded_token})

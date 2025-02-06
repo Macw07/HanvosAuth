@@ -42,10 +42,9 @@ def verify_jwt(token):
         return None
 
 
-@app.route('/email/test')
-def test():
-    send_email('otp_code.html', "Your OTP Code for All-Hanvos", 'marco.shengqi@gmail.com', code="309937")
-    return jsonify("Success")
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -57,7 +56,7 @@ def login():
             access_token = create_access_token(
                 identity=str(session['user_id']),  # 这里必须是字符串或整数
                 expires_delta=timedelta(seconds=60),
-                additional_claims={'username': session['username'], 'email': session['email']}
+                additional_claims={'username': session['username'], 'email': session['email'], 'avatar': session['avatar']}
             )
             response = {'code': 200, 'msg': 'Success', 'token': access_token, 'redirect': redirect_url + f'?token={access_token}'}
             return jsonify(response)
@@ -78,10 +77,11 @@ def login():
                     session['user_id'] = user['id']
                     session['username'] = user['username']
                     session['email'] = user['email']
+                    session['email'] = user['avatar']
                     access_token = create_access_token(
                         identity=str(session['user_id']),  # 这里必须是字符串或整数
                         expires_delta=timedelta(seconds=60),
-                        additional_claims={'username': session['username'], 'email': session['email']}
+                        additional_claims={'username': session['username'], 'email': session['email'], 'avatar': session['avatar']}
                     )
                     response = {'code': 200, 'msg': 'Success', 'token': access_token, 'redirect': redirect_url}
                     return jsonify(response)

@@ -77,7 +77,7 @@ def login():
                     session['user_id'] = user['id']
                     session['username'] = user['username']
                     session['email'] = user['email']
-                    session['email'] = user['avatar']
+                    session['avatar'] = user['avatar']
                     access_token = create_access_token(
                         identity=str(session['user_id']),  # 这里必须是字符串或整数
                         expires_delta=timedelta(seconds=60),

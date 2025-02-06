@@ -22,16 +22,18 @@ def hash_password(password):
 def check_password(hashed_password, password):
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
-
 def verify_jwt(token):
     try:
-        print("Trying to verify token")
+        print("Trying to verify token", token)
         decoded_token = decode_token(token)
-        print(decoded_token)
+        print(f"Decoded Token: {decoded_token}")  # ✅ 确保成功解析时也打印
         return decoded_token
     except JWTDecodeError as e:
-        print(f"JWT decoding error: {e}")  # ✅ 直接打印错误信息
-        return None
+        print(f"JWT decoding error: {e}")  # ✅ 仅捕获 JWT 解析错误
+    except Exception as e:
+        print(f"Unexpected error: {e}")  # ✅ 捕获所有未预料的错误
+    return None
+
 
 
 @app.route('/login', methods=['GET', 'POST'])

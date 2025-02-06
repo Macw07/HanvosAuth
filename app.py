@@ -25,6 +25,7 @@ def check_password(hashed_password, password):
 
 def verify_jwt(token):
     try:
+        print("Trying to verify token")
         decoded_token = decode_token(token)
         return decoded_token
     except JWTDecodeError as e:
@@ -85,6 +86,7 @@ def token_verify():
     token = request.args.get('token')
     if not token:
         return jsonify({'code': 400, 'msg': 'Token is missing!'})
+    print("Verify Token")
     decoded_token = verify_jwt(token)
     print("Verified")
     if decoded_token:

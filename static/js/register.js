@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
             password: passwordInput.value,
         }).then(data => {
             if (data.code === 200) {
-                showModal(data.msg, () => location.href = '/login');
+                showModal(data.msg, () => location.href = redirectUrl);
             } else {
                 showModal(data.msg);
                 codeInput.value = '';

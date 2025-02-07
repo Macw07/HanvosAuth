@@ -14,6 +14,24 @@ document.addEventListener("DOMContentLoaded", function () {
     let countdown = 60;
     let interval;
 
+    // 获取 URL 参数
+    const params = new URLSearchParams(window.location.search);
+    const redirectUrl = params.get('redirect');
+
+    // 获取 "Back to Login" 和 "Forget Password?" 的链接
+    const backToLoginLink = document.getElementById("back-to-login-link");
+    const forgetPasswordLink = document.getElementById("forget-password-link");
+
+    // 设置 "Back to Login" 链接：直接跳转到 redirect 指定的路径
+    if (redirectUrl) {
+        backToLoginLink.href = redirectUrl;
+    }
+
+    // 设置 "Forget Password?" 链接：把当前 redirect 作为新的 query string
+    const baseForgetPasswordUrl = "/password/reset";
+    forgetPasswordLink.href = `${baseForgetPasswordUrl}?redirect=${encodeURIComponent(redirectUrl)}`;
+
+
     getCodeButton.disabled = true;
     getCodeButton.classList.add("opacity-50", "cursor-not-allowed");
     registerButton.disabled = true;

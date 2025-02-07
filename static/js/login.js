@@ -6,6 +6,18 @@ const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const submitButton = loginForm.querySelector('button[type="submit"]');
 
+const currentUrl = window.location.href;
+
+const forgetPasswordLink = document.getElementById('forget-password-link');
+const createAccountLink = document.getElementById('create-account-link');
+
+const baseForgetPasswordUrl = "/password/reset";
+const baseCreateAccountUrl = "/register";
+
+forgetPasswordLink.href = `${baseForgetPasswordUrl}?redirect=${encodeURIComponent(currentUrl)}`;
+createAccountLink.href = `${baseCreateAccountUrl}?redirect=${encodeURIComponent(currentUrl)}`;
+
+
 // 初始化按钮状态（禁用）
 submitButton.disabled = true;
 submitButton.classList.add('opacity-50', 'cursor-not-allowed');

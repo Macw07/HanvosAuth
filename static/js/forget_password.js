@@ -1,6 +1,14 @@
 import { apiRequest } from "../utils/apiRequest.js";
 import { showModal } from "../utils/showModal.js";
 
+const params = new URLSearchParams(window.location.search);
+const redirectUrl = params.get('redirect');
+
+const backToLoginLink = document.getElementById("back-to-login-link");
+
+backToLoginLink.href = redirectUrl;
+
+
 document.getElementById("forgot-password-form").addEventListener("submit", function (event) {
     event.preventDefault(); // 阻止表单默认提交行为
 

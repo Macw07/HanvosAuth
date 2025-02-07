@@ -113,7 +113,9 @@ def get_user():
     email = request.args.get('email')
     if totp.verify(otp):
         info = db_query("SELECT * FROM users WHERE email = ?", (email, ))
-        return jsonify({'code': 200, 'msg': 'Success', 'data': info})
+        if info:
+            return jsonify({'code': 200, 'msg': 'Success', 'data': info[0]})
+        return jsonify({'code': 401, 'msg': 'Incorrect info!'})
     return jsonify({'code': 401, 'msg': 'Incorrect token!'})
 
 

@@ -35,12 +35,13 @@ export function showModal(message, callback) {
             callback();
         }
 
-        // 移除键盘事件监听
-        document.removeEventListener('keydown', handleKeyDown);
+        // 移除键盘事件监听（捕获阶段）
+        document.removeEventListener('keydown', handleKeyDown, true);
     }
 
     function handleKeyDown(event) {
-        if (event.key === 'Enter' && !document.activeElement.matches('input, textarea, select')) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 阻止默认行为（例如表单提交）
             closeModal();
         }
     }
@@ -48,6 +49,6 @@ export function showModal(message, callback) {
     // 监听点击 "Confirm" 按钮
     confirmButton.addEventListener('click', closeModal);
 
-    // 监听键盘回车键
-    document.addEventListener('keydown', handleKeyDown);
+    // 监听键盘回车键，使用捕获阶段优先拦截事件
+    document.addEventListener('keydown', handleKeyDown, true);
 }

@@ -49,6 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     getCodeButton.addEventListener("click", () => {
         if (!emailInput.value.trim()) return;
+        if (!emailInput.value.endsWith('@hanvos-kent.com')) {
+            showModal("You must register with an email address ending with @hanvos-kent.com!");
+            return ;
+        }
         getCodeButton.disabled = true;
         getCodeButton.classList.add("opacity-50", "cursor-not-allowed");
 
@@ -90,6 +94,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (confirmPasswordInput.value !== passwordInput.value) {
             showModal("Passwords do not match!");
             return;
+        }
+
+        if (!emailInput.value.endsWith('@hanvos-kent.com')) {
+            showModal("You must register with an email address ending with @hanvos-kent.com!");
+            return ;
         }
 
         // 禁用按钮并显示加载动画

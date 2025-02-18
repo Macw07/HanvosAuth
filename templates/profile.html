@@ -7,94 +7,93 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 min-h-screen flex items-center justify-center">
+<div class="bg-gray-800 w-full max-w-xl shadow-lg rounded-xl p-8">
+  <!-- 标题 -->
+  <h2 class="text-4xl font-bold text-white mb-6 text-center">Profile</h2>
 
-  <div class="bg-gray-800 w-full max-w-xl shadow-lg rounded-xl p-8">
-    <!-- 标题 -->
-    <h2 class="text-4xl font-bold text-white mb-6 text-center">Profile</h2>
+  <!-- 头像上传区域 -->
+  <div class="relative w-28 h-28 mx-auto mb-6 group">
+    <img
+            id="avatar"
+            alt="Avatar"
+            class="w-full h-full rounded-full object-cover border-4 border-gray-600 shadow-md"
+    />
+    <!-- 悬停蒙版 -->
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+      <span class="text-white text-sm font-semibold text-center">Change<br>Avatar</span>
+    </div>
+    <!-- 加载时显示的 Spinner -->
+    <div id="avatarSpinner" class="absolute inset-0 flex items-center justify-center rounded-full bg-gray-900 bg-opacity-50 hidden z-10">
+      <div class="w-8 h-8 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+    </div>
+    <!-- 隐藏的文件上传控件 -->
+    <input id="avatarUpload" type="file" accept="image/*" class="hidden" />
+    <!-- 用于存储头像 URL -->
+    <input type="hidden" id="avatarUrl" value="">
+  </div>
 
-    <!-- 头像 -->
-    <div class="flex justify-center mb-6">
-      <img
-        id="avatar"
-        alt="Avatar"
-        class="w-28 h-28 rounded-full object-cover border-4 border-gray-600 shadow-md"
+  <!-- 用户信息表单 -->
+  <div class="space-y-6">
+    <!-- User ID (只读) -->
+    <div>
+      <label for="user_id" class="block text-lg text-gray-300 mb-1">User ID</label>
+      <input
+              id="user_id"
+              type="text"
+              class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 cursor-not-allowed"
+              readonly
       />
     </div>
 
-    <!-- 用户信息表单 -->
-    <div class="space-y-6">
-      <!-- User ID (只读) -->
-      <div>
-        <label class="block text-lg text-gray-300 mb-1">User ID</label>
-        <input
-          id="user_id"
-          type="text"
-          class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 cursor-not-allowed"
-          value=""
-          readonly
-        />
-      </div>
-
-      <!-- Email (只读) -->
-      <div>
-        <label class="block text-lg text-gray-300 mb-1">Email</label>
-        <input
-          id="email"
-          type="email"
-          class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 cursor-not-allowed"
-          value=""
-          readonly
-        />
-      </div>
-
-      <!-- Avatar URL -->
-      <div>
-        <label class="block text-lg text-gray-300 mb-1">Avatar URL</label>
-        <input
-          id="avatarUrl"
-          type="text"
-          class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <!-- Username -->
-      <div>
-        <label class="block text-lg text-gray-300 mb-1">Username</label>
-        <input
-          id="username"
-          type="text"
-          class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <!-- Password -->
-      <div>
-        <label class="block text-lg text-gray-300 mb-1">Password</label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Leave blank if you don't want to change."
-          class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+    <!-- Email (只读) -->
+    <div>
+      <label for="email" class="block text-lg text-gray-300 mb-1">Email</label>
+      <input
+              id="email"
+              type="email"
+              class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 cursor-not-allowed"
+              readonly
+      />
     </div>
 
-    <!-- 按钮组 -->
-    <div class="mt-6 space-y-4">
-      <button
-        id="logoutButton"
-        class="w-full bg-red-500 hover:bg-red-600 text-white text-lg font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-400"
-      >
-        Logout
-      </button>
-      <button
-        id="saveProfile"
-        class="w-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-      >
-        Save Changes
-      </button>
+    <!-- Username -->
+    <div>
+      <label for="username" class="block text-lg text-gray-300 mb-1">Username</label>
+      <input
+              id="username"
+              type="text"
+              class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label for="password" class="block text-lg text-gray-300 mb-1">Password</label>
+      <input
+              id="password"
+              type="password"
+              placeholder="Leave blank if you don't want to change."
+              class="w-full border border-gray-700 rounded-lg px-4 py-3 text-gray-300 bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
     </div>
   </div>
+
+  <!-- 按钮组 -->
+  <div class="mt-6 space-y-4">
+    <button
+            id="logoutButton"
+            class="w-full bg-red-500 hover:bg-red-600 text-white text-lg font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-red-400"
+    >
+      Logout
+    </button>
+    <button
+            id="saveProfile"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white text-lg font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      Save Changes
+    </button>
+  </div>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </body>
-<script type='module' src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </html>

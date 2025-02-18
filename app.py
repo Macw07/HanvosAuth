@@ -1,4 +1,3 @@
-import time
 from datetime import timedelta
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
@@ -10,6 +9,9 @@ from database_operations import db_execute, db_query
 from flask_jwt_extended import JWTManager, create_access_token, decode_token, get_jwt_identity
 from flask_jwt_extended.exceptions import JWTDecodeError
 from utils.email_init import flask_mail_init, send_email
+import boto3
+from werkzeug.utils import secure_filename
+import uuid
 
 
 app = Flask(__name__)
@@ -20,6 +22,17 @@ jwt = JWTManager(app)
 totp = pyotp.TOTP('MRHWLR7C4FNJISRWFHQBFP67VOCHDALM')
 flask_mail_init()
 
+R2_ENDPOINT = "https://3b13f2964989c14420fc56a4cbe6f063.r2.cloudflarestorage.com"  # 替换 <your-account-id>
+R2_ACCESS_KEY = "5eddb8b6a1ca03fb0e89e2de4ed57a26"
+R2_SECRET_KEY = "3b8aa89a2b60c20fb3fb947617a5ed9b69d11e60969f2482ef8d48ba5e2b5fe1"
+R2_BUCKET_NAME = "hanvos-auth-image"
+
+s3_client = boto3.client(
+    "s3",
+    endpoint_url=R2_ENDPOINT,
+    aws_access_key_id=R2_ACCESS_KEY,
+    aws_secret_access_key=R2_SECRET_KEY,
+)
 
 if app.config["ENV"] == "production":
     app.static_folder = "static_prod"
@@ -185,21 +198,64 @@ def get_profile_info():
     return jsonify(data[0])
 
 
+
+
+@app.route('/avatar/upload', methods=['POST'])
+def change_avatar():
+    if 'user_id' not in session:
+        return jsonify({'code': 401, 'msg': 'Invalid Credentials!'})
+
+    if "avatar" not in request.files:
+        return jsonify({'code': 400, 'msg': 'No file uploaded'}), 400
+
+    MAX_FILE_SIZE = 5 * 1024 * 1024
+
+    user_id = session['user_id']
+    file = request.files["avatar"]
+
+    if file.filename == "":
+        return jsonify({'code': 400, 'msg': 'No selected file'}), 400
+
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)
+    if file_size > MAX_FILE_SIZE:
+        return jsonify({'code': 400, 'msg': 'File size exceeds 5MB limit'}), 400
+
+    ext = file.filename.rsplit('.', 1)[-1].lower()
+    filename = f"avatars/{uuid.uuid4().hex}.{ext}"
+
+    past_url = db_query('SELECT avatar FROM Users WHERE id = ?', (user_id, ))[0]['avatar']
+    if past_url:
+        path = "/".join(past_url.split("/")[3:])  # 提取 R2 里的路径
+        s3_client.delete_object(Bucket=R2_BUCKET_NAME, Key=path)
+
+    try:
+        s3_client.upload_fileobj(file, R2_BUCKET_NAME, filename, ExtraArgs={"ACL": "public-read"})
+        avatar_url = f"https://assets.allhanvos.com/{filename}"
+        db_execute('UPDATE Users SET avatar = ? WHERE id = ?', (avatar_url, user_id, ))
+
+        return jsonify({'code': 200, 'msg': 'Success', 'avatarUrl': avatar_url})
+
+    except Exception as e:
+        print(f"Error uploading to R2: {e}")
+        return jsonify({'code': 500, 'msg': 'Upload failed'}), 500
+
+
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
     if 'user_id' not in session:
         return jsonify({'code': 401, 'msg': 'Invalid Credentials!'})
     data = request.get_json()
-    avatar = data.get('avatar')
     username = data.get('username')
     password = data.get('password')
     res = db_query('SELECT * FROM Users WHERE username = ?', (username, ))
     if res and res[0]['id'] != session['user_id']:
         return jsonify({'code': 201, 'msg': 'Username is already occupied!'})
     if password == 'no change':
-        db_execute("Update Users SET username=?, avatar=? WHERE email=?", (username, avatar, session['email'], ))
+        db_execute("Update Users SET username=? WHERE email=?", (username, session['email'], ))
     else:
-        db_execute("Update Users SET username=?, avatar=?, password=? WHERE email=?", (username, avatar, hash_password(password), session['email'], ))
+        db_execute("Update Users SET username=?, password=? WHERE email=?", (username, hash_password(password), session['email'], ))
         session.clear()
     return jsonify({'code': 200, 'msg': 'Success'})
 

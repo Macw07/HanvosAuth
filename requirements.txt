@@ -4,3 +4,4 @@ pyotp
 flask-jwt-extended
 gunicorn
 flask_mail
+boto3

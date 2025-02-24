@@ -143,8 +143,8 @@ def register():
         password = data['password']
         user_code = data['user_code']
         user = db_query("SELECT * FROM users WHERE email = ?", (email, ))
-        if not email.endswith('@hanvos-kent.com'):
-            return jsonify({'code': 201, 'msg': 'You must register with email address ending with @hanvos-kent.com!'})
+        if not email.endswith('@hanvos-kent.com') and not email.endswith('@faculty.kleducation.org'):
+            return jsonify({'code': 201, 'msg': 'You must register with email address ending with @hanvos-kent.com! or @faculty.kleducation.org'})
         if code != user_code:
             return jsonify({'code': 201, 'msg': 'Incorrect OTP code!'})
         if user:

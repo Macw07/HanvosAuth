@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     getCodeButton.addEventListener("click", () => {
         if (!emailInput.value.trim()) return;
-        if (!emailInput.value.endsWith('@hanvos-kent.com')) {
-            showModal("You must register with an email address ending with @hanvos-kent.com!");
+        if (!emailInput.value.endsWith('@hanvos-kent.com') && !emailInput.value.endsWith('@faculty.kleducation.org')) {
+            showModal("You must register with an email address ending with @hanvos-kent.com or @faculty.kleducation.org!");
             return ;
         }
         getCodeButton.disabled = true;
@@ -96,8 +96,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (!emailInput.value.endsWith('@hanvos-kent.com')) {
-            showModal("You must register with an email address ending with @hanvos-kent.com!");
+        if (!emailInput.value.endsWith('@hanvos-kent.com') && !emailInput.value.endsWith('@faculty.kleducation.org')) {
+            showModal("You must register with an email address ending with @hanvos-kent.com or @faculty.kleducation.org!");
             return ;
         }
 

@@ -65,7 +65,7 @@ loginForm.addEventListener('submit', async function (event) {
 
     apiRequest('POST', requestUrl, { email, password }).then(data => {
         if (data.code === 200) {
-            location.href = data.redirect === '/profile' ? '/profile' : `${data.redirect}?token=${data.token}`;
+            location.href = data.redirect === '/profile' ? '/profile' : `${redirectUrl}?token=${data.token}`;
         } else {
             showModal(data.msg);
             restoreButton();

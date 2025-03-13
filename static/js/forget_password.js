@@ -1,5 +1,4 @@
 import { apiRequest } from "../utils/apiRequest.js";
-import { showModal } from "../utils/showModal.js";
 
 const params = new URLSearchParams(window.location.search);
 const redirectUrl = params.get('redirect');

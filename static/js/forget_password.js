@@ -1,7 +1,7 @@
 import { apiRequest } from "../utils/apiRequest.js";
 
 const params = new URLSearchParams(window.location.search);
-const redirectUrl = params.get('redirect');
+const redirectUrl = params.get('redirect') || '/login';
 
 const backToLoginLink = document.getElementById("back-to-login-link");
 
